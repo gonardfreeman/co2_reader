@@ -9,50 +9,80 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
-
+    @ObservedObject var bleManager = BLEManager()
+    
     var body: some View {
-        NavigationSplitView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
-                    }
+        VStack(spacing: 20) {
+            Text("BLE Status: \(bleManager.isConnected ? "Connected" : "Scanning...")")
+                .font(.headline)
+            VStack {
+                HStack {
+                    Text("Received Name:")
+                        .font(.subheadline)
+                    Text(bleManager.deviceName)
+                        .padding()
+                        .background(Color.gray.opacity(0.2))
+                        .cornerRadius(8)
+                        .multilineTextAlignment(.center)
                 }
-                .onDelete(perform: deleteItems)
-            }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
+                HStack {
+                    Text("Received CO2:")
+                        .font(.subheadline)
+                    Text(String(bleManager.gas.co2_ppm))
+                        .padding()
+                        .background(Color.gray.opacity(0.2))
+                        .cornerRadius(8)
+                        .multilineTextAlignment(.center)
                 }
             }
-        } detail: {
-            Text("Select an item")
+            
         }
+        .padding()
     }
-
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
-        }
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
-            }
-        }
-    }
+    //    @Environment(\.modelContext) private var modelContext
+    //    @Query private var items: [Item]
+    
+    //    var body: some View {
+    //        NavigationSplitView {
+    //            List {
+    //                ForEach(items) { item in
+    //                    NavigationLink {
+    //                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
+    //                    } label: {
+    //                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
+    //                    }
+    //                }
+    //                .onDelete(perform: deleteItems)
+    //            }
+    //            .toolbar {
+    //                ToolbarItem(placement: .navigationBarTrailing) {
+    //                    EditButton()
+    //                }
+    //                ToolbarItem {
+    //                    Button(action: addItem) {
+    //                        Label("Add Item", systemImage: "plus")
+    //                    }
+    //                }
+    //            }
+    //        } detail: {
+    //            Text("Select an item")
+    //        }
+    //    }
+    
+    //    private func addItem() {
+    //        withAnimation {
+    //            let newItem = Item(timestamp: Date())
+    //            modelContext.insert(newItem)
+    //        }
+    //    }
+    //
+    //    private func deleteItems(offsets: IndexSet) {
+    //        withAnimation {
+    //            for index in offsets {
+    //                modelContext.delete(items[index])
+    //            }
+    //        }
+    //    }
 }
 
 #Preview {
