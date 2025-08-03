@@ -34,6 +34,24 @@ struct ContentView: View {
                         .cornerRadius(8)
                         .multilineTextAlignment(.center)
                 }
+                HStack {
+                    Text("Received Temperature:")
+                        .font(.subheadline)
+                    Text(String(bleManager.temperature.integer))
+                        .padding()
+                        .background(Color.gray.opacity(0.2))
+                        .cornerRadius(8)
+                        .multilineTextAlignment(.center)
+                }
+                HStack {
+                    Text("Received Humidity:")
+                        .font(.subheadline)
+                    Text(String(bleManager.humidity))
+                        .padding()
+                        .background(Color.gray.opacity(0.2))
+                        .cornerRadius(8)
+                        .multilineTextAlignment(.center)
+                }
             }
             
         }

@@ -1,39 +1,17 @@
 import Foundation
 import CoreBluetooth
 
-struct Gas {
-    var co2_ppm: UInt16
-    var tvoc_ppb: UInt16
-    
-    init() {
-        self.co2_ppm = 0
-        self.tvoc_ppb = 0
-    }
-}
-
-extension Gas {
-    init?(data: Data) {
-        guard data.count == 4 else { return nil }
-        self.co2_ppm = UInt16(littleEndian: data.withUnsafeBytes { $0.load(fromByteOffset: 0, as: UInt16.self) })
-        self.tvoc_ppb = UInt16(littleEndian: data.withUnsafeBytes { $0.load(fromByteOffset: 2, as: UInt16.self) })
-    }
-}
 
 class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeripheralDelegate {
     var centralManager: CBCentralManager!
     var connectedPeripheral: CBPeripheral?
-    var gasCharacteristic: CBCharacteristic?
     var timer: Timer?
     
     @Published var isConnected = false
     @Published var deviceName: String = "No data yet"
     @Published var gas: Gas = Gas()
-    
-    let configServiceUUID = CBUUID(string: "EF680100-9B35-4933-9B10-52FFA9740042")
-    let deviceNameCharacteristicUUID = CBUUID(string: "EF680101-9B35-4933-9B10-52FFA9740042")
-    
-    let envServiceUUID = CBUUID(string: "EF680200-9B35-4933-9B10-52FFA9740042")
-    let co2CharacteristicUUID = CBUUID(string: "EF680204-9B35-4933-9B10-52FFA9740042")
+    @Published var temperature: Temperature = Temperature()
+    @Published var humidity: UInt8 = 0
     
     override init() {
         super.init()
@@ -42,7 +20,13 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         if central.state == .poweredOn {
-            centralManager.scanForPeripherals(withServices: [configServiceUUID, envServiceUUID], options: nil)
+            centralManager.scanForPeripherals(
+                withServices: [
+                    ConfigurationServiceUUIDDefinitions.service.uuid,
+                    EnvironmentServiceUUIDDefinitions.service.uuid
+                ],
+                options: nil
+            )
         } else {
             print("Bluetooth not available")
         }
@@ -59,14 +43,22 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         print("Connected to: \(peripheral.name ?? "Unknown")")
         isConnected = true
-        peripheral.discoverServices([configServiceUUID, envServiceUUID])
+        peripheral.discoverServices(
+            [
+                ConfigurationServiceUUIDDefinitions.service.uuid,
+                EnvironmentServiceUUIDDefinitions.service.uuid
+            ]
+        )
     }
     
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
         guard let services = peripheral.services else { return }
         for service in services {
             print("Discovered service: \(service.uuid)")
-            peripheral.discoverCharacteristics([deviceNameCharacteristicUUID, co2CharacteristicUUID], for: service)
+            peripheral.discoverCharacteristics(
+                ConfigurationServiceUUIDDefinitions.usedCharacteristicsUUIDs + EnvironmentServiceUUIDDefinitions.usedCharacteristicsUUIDs,
+                for: service
+            )
         }
     }
     
@@ -74,18 +66,26 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         guard let characteristics = service.characteristics else {
             return
         }
-        for characteristic in characteristics where [co2CharacteristicUUID, deviceNameCharacteristicUUID].contains(characteristic.uuid ) {
+        let mergedUUIDs = ConfigurationServiceUUIDDefinitions.usedCharacteristicsUUIDs + EnvironmentServiceUUIDDefinitions.usedCharacteristicsUUIDs
+        for characteristic in characteristics where mergedUUIDs.contains(characteristic.uuid ) {
             switch characteristic.uuid {
-            case co2CharacteristicUUID:
-                gasCharacteristic = characteristic
+            case EnvironmentServiceUUIDDefinitions.gas.uuid:
                 if characteristic.properties.contains(.notify) {
                     peripheral.setNotifyValue(true, for: characteristic)
-                } else {
-                    print("Characteristic \(characteristic.uuid) doesn't support notify.")
                 }
                 break
-            case deviceNameCharacteristicUUID:
-                readOnce(characteristic: characteristic)
+            case EnvironmentServiceUUIDDefinitions.temperature.uuid:
+                if characteristic.properties.contains(.notify) {
+                    peripheral.setNotifyValue(true, for: characteristic)
+                }
+                break
+            case EnvironmentServiceUUIDDefinitions.humidity.uuid:
+                if characteristic.properties.contains(.notify) {
+                    peripheral.setNotifyValue(true, for: characteristic)
+                }
+                break
+            case ConfigurationServiceUUIDDefinitions.name.uuid:
+                updateValue(characteristic: characteristic)
                 break
             default:
                 print("has to be defined")
@@ -94,42 +94,79 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         }
     }
     
-    private func readOnce( characteristic: CBCharacteristic) {
-        if let peripheral = connectedPeripheral {
-            print("read once: \(characteristic.uuid)")
-            peripheral.readValue(for: characteristic)
-        }
-    }
-    
     func peripheral(_ peripheral: CBPeripheral, didUpdateNotificationStateFor characteristic: CBCharacteristic, error: Error?) {
         if let error = error {
             print("⚠️ Failed to enable notifications: \(error.localizedDescription)")
             return
         }
-        print("✅ Notification state updated for \(characteristic.uuid) — isNotifying: \(characteristic.isNotifying)")
-        if characteristic.uuid == co2CharacteristicUUID {
-            if let value = characteristic.value {
-                if let gas = Gas(data: value) {
-                    DispatchQueue.main.async {
-                        self.gas = gas
-                    }
-                }
-            }
-        }
+        updateValue(characteristic: characteristic)
     }
     
     
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
-        print("updated value for \(characteristic.uuid)")
-        if characteristic.uuid == deviceNameCharacteristicUUID {
-            if let value = characteristic.value {
-                let stringData = String(decoding: value, as: UTF8.self)
-                DispatchQueue.main.async {
-                    self.deviceName = stringData
-                }
-            }
+        updateValue(characteristic: characteristic)
+    }
+    
+    private func updateValue(characteristic: CBCharacteristic) {
+        switch characteristic.uuid {
+        case ConfigurationServiceUUIDDefinitions.name.uuid:
+            updateName(characteristic: characteristic)
+            break;
+        case EnvironmentServiceUUIDDefinitions.gas.uuid:
+            updateCo2(characteristic: characteristic)
+            break;
+        case EnvironmentServiceUUIDDefinitions.temperature.uuid:
+            updateTemperature(characteristic: characteristic)
+            break;
+        case EnvironmentServiceUUIDDefinitions.humidity.uuid:
+            updateHumidity(characteristic: characteristic)
+            break;
+        default:
+            print("unknown char: \(characteristic.uuid)")
+            break;
         }
-        
-        
+    }
+    
+    private func updateHumidity(characteristic: CBCharacteristic) {
+        guard let value = characteristic.value else {
+            print("no value for: \(characteristic.uuid)")
+            return
+        }
+        DispatchQueue.main.async {
+            self.humidity = UInt8(value[0])
+        }
+    }
+    
+    private func updateTemperature(characteristic: CBCharacteristic) {
+        guard let value = characteristic.value else {
+            print("no value for: \(characteristic.uuid)")
+            return
+        }
+        guard let temperature = Temperature(data: value) else { return }
+        DispatchQueue.main.async {
+            self.temperature = temperature
+        }
+    }
+    
+    private func updateCo2(characteristic: CBCharacteristic) {
+        guard let value = characteristic.value else {
+            print("no value for: \(characteristic.uuid)")
+            return
+        }
+        guard let gas = Gas(data: value) else { return }
+        DispatchQueue.main.async {
+            self.gas = gas
+        }
+    }
+    
+    private func updateName(characteristic: CBCharacteristic) {
+        guard let value = characteristic.value else {
+            print("no value for: \(characteristic.uuid)")
+            return
+        }
+        let stringData = String(decoding: value, as: UTF8.self)
+        DispatchQueue.main.async {
+            self.deviceName = stringData
+        }
     }
 }
