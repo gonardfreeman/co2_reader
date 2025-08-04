@@ -23,7 +23,22 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		6D2B8C852E404CAF0030820E /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		6D2B8C6C2E404CAE0030820E /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		6D2B8C6E2E404CAE0030820E /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		6D9F1DED2E3EDCBF007468A1 /* CO2 Sensor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "CO2 Sensor.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6D9F1DFC2E3EDCC1007468A1 /* CO2 SensorTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "CO2 SensorTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6D9F1E062E3EDCC1007468A1 /* CO2 SensorUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "CO2 SensorUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -72,12 +87,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		6D2B8C6B2E404CAE0030820E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				6D2B8C6C2E404CAE0030820E /* WidgetKit.framework */,
+				6D2B8C6E2E404CAE0030820E /* SwiftUI.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		6D9F1DE42E3EDCBF007468A1 = {
 			isa = PBXGroup;
 			children = (
 				6D9F1DEF2E3EDCBF007468A1 /* CO2 Sensor */,
 				6D9F1DFF2E3EDCC1007468A1 /* CO2 SensorTests */,
 				6D9F1E092E3EDCC1007468A1 /* CO2 SensorUITests */,
+				6D2B8C6B2E404CAE0030820E /* Frameworks */,
 				6D9F1DEE2E3EDCBF007468A1 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -102,6 +127,7 @@
 				6D9F1DE92E3EDCBF007468A1 /* Sources */,
 				6D9F1DEA2E3EDCBF007468A1 /* Frameworks */,
 				6D9F1DEB2E3EDCBF007468A1 /* Resources */,
+				6D2B8C852E404CAF0030820E /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
@@ -400,6 +426,7 @@
 				DEVELOPMENT_TEAM = S7H39LL58W;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "To connect with CO2 sensore device";
 				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "To connect with CO2 sensore device";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -430,6 +457,7 @@
 				DEVELOPMENT_TEAM = S7H39LL58W;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "To connect with CO2 sensore device";
 				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "To connect with CO2 sensore device";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

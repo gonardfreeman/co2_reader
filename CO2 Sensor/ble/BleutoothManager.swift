@@ -1,7 +1,10 @@
 import CoreBluetooth
 import Foundation
+import SwiftData
 
 class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeripheralDelegate {
+    private let modelContext: ModelContext
+
     var centralManager: CBCentralManager!
     var connectedPeripheral: CBPeripheral?
     var timer: Timer?
@@ -12,7 +15,8 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     @Published var temperature: Temperature = .init()
     @Published var humidity: UInt8 = 0
 
-    override init() {
+    init(modelContext: ModelContext) {
+        self.modelContext = modelContext
         super.init()
         centralManager = CBCentralManager(delegate: self, queue: nil)
     }
@@ -122,6 +126,12 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         }
         DispatchQueue.main.async {
             self.humidity = UInt8(value[0])
+            self.modelContext.insert(
+                BLEReading(
+                    humidity: UInt8(value[0]),
+                    type: "humidity",
+                ),
+            )
         }
     }
 
@@ -133,6 +143,12 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         guard let temperature = Temperature(data: value) else { return }
         DispatchQueue.main.async {
             self.temperature = temperature
+            self.modelContext.insert(
+                BLEReading(
+                    temperature: temperature.decimal,
+                    type: "temperature",
+                ),
+            )
         }
     }
 
@@ -144,6 +160,12 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         guard let gas = Gas(data: value) else { return }
         DispatchQueue.main.async {
             self.gas = gas
+            self.modelContext.insert(
+                BLEReading(
+                    gas: gas.co2_ppm,
+                    type: "co2",
+                ),
+            )
         }
     }
 
@@ -155,6 +177,12 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         let stringData = String(decoding: value, as: UTF8.self)
         DispatchQueue.main.async {
             self.deviceName = stringData
+            self.modelContext.insert(
+                BLEReading(
+                    deviceName: stringData,
+                    type: "deviceName",
+                ),
+            )
         }
     }
 }
