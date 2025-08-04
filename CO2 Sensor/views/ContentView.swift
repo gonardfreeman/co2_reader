@@ -5,12 +5,19 @@
 //  Created by Dima Bondarenko on 2025-08-02.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct ContentView: View {
+    @Environment(\.modelContext) private var modelContext
+    @Query private var bleData: [BluetoothState]
+
     @ObservedObject var bleManager = BLEManager()
-    
+
+    var currentState: BluetoothState {
+        bleData.first ?? BluetoothState(isGas: true, isTemp: true, isHumidity: true)
+    }
+
     var body: some View {
         VStack(spacing: 20) {
             Text("BLE Status: \(bleManager.isConnected ? "Connected" : "Scanning...")")
@@ -53,13 +60,12 @@ struct ContentView: View {
                         .multilineTextAlignment(.center)
                 }
             }
-            
         }
         .padding()
     }
     //    @Environment(\.modelContext) private var modelContext
     //    @Query private var items: [Item]
-    
+
     //    var body: some View {
     //        NavigationSplitView {
     //            List {
@@ -86,7 +92,7 @@ struct ContentView: View {
     //            Text("Select an item")
     //        }
     //    }
-    
+
     //    private func addItem() {
     //        withAnimation {
     //            let newItem = Item(timestamp: Date())

@@ -10,7 +10,7 @@ import CoreBluetooth
 struct BaseServiceCharacteristicDescription {
     var name: String
     var uuid: CBUUID
-    
+
     init(name: String, uuid: CBUUID) {
         self.name = name
         self.uuid = uuid

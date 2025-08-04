@@ -8,7 +8,6 @@
 import XCTest
 
 final class CO2_SensorUITestsLaunchTests: XCTestCase {
-
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true
     }

@@ -5,8 +5,8 @@
 //  Created by Dima Bondarenko on 2025-08-02.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 @main
 struct CO2_SensorApp: App {
