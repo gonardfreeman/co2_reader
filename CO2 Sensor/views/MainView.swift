@@ -9,21 +9,21 @@ import SwiftData
 import SwiftUI
 
 struct MainView: View {
-    @EnvironmentObject var viewModel: BLEViewModel
-
-    @Query(filter: #Predicate<BLEReading> { $0.type == "deviceName" }) var deviceNameRecord: [BLEReading]
+    let manager: BLEManager
+    @Environment(\.modelContext) private var context
 
     var body: some View {
         ScrollView {
             VStack {
                 HStack {
-                    Text(deviceNameRecord.first?.deviceName ?? "Loading...")
+                    //                    Text(deviceNameRecord.first?.deviceName ?? "Loading...")
+                    Text("Test")
                         .font(.largeTitle)
                     Spacer()
                 }
-                ReadingCardView(readingType: "co2")
-                ReadingCardView(readingType: "temperature")
-                ReadingCardView(readingType: "humidity")
+                ReadingCardView(readingType: "co2", context: context, manager: manager)
+                ReadingCardView(readingType: "temperature", context: context, manager: manager)
+                ReadingCardView(readingType: "humidity", context: context, manager: manager)
             }
             .padding()
         }
@@ -114,6 +114,7 @@ struct MainView: View {
             type: "humidity",
         ),
     )
-    return MainView()
+    let manager = BLEManager()
+    return MainView(manager: manager)
         .modelContainer(container)
 }
