@@ -27,7 +27,7 @@ struct CO2_SensorApp: App {
 
     var body: some Scene {
         WindowGroup {
-            MainView(manager: bleManager)
+            MainView(modelContext: sharedModelContainer.mainContext, manager: bleManager)
         }
         .modelContainer(sharedModelContainer)
     }

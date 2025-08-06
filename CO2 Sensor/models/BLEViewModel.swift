@@ -17,6 +17,19 @@ class BLEViewModel: ObservableObject {
     @Published var isConnected: Bool = false
 
     @Published var readings: [BLEReading] = []
+    
+    var deviceName: String {
+        guard !readings.isEmpty else {
+            return "Loading..."
+        }
+        let readings = readings.map { reading in
+            return reading.deviceName ?? nil
+        }.compactMap(\.self)
+        guard let cur = readings.first else {
+            return "Loading..."
+        }
+        return cur
+    }
 
     var currentReading: String {
         if allReadings.isEmpty {

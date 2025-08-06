@@ -108,7 +108,7 @@ struct ReadingCardView: View {
     )
     return ReadingCardView(
         readingType: "co2",
-        context:container.mainContext,
+        context: container.mainContext,
         manager: BLEManager(),
     )
     .modelContainer(container)

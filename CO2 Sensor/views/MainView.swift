@@ -9,15 +9,29 @@ import SwiftData
 import SwiftUI
 
 struct MainView: View {
+    @StateObject var viewModel: BLEViewModel
     let manager: BLEManager
     @Environment(\.modelContext) private var context
+    
+    init(
+        modelContext: ModelContext,
+        manager: BLEManager,
+    ) {
+        self.manager = manager
+        _viewModel = StateObject(
+            wrappedValue: BLEViewModel(
+                modelContext: modelContext,
+                readingType: "deviceName",
+                bleManager: manager,
+            ),
+        )
+    }
 
     var body: some View {
         ScrollView {
             VStack {
                 HStack {
-                    //                    Text(deviceNameRecord.first?.deviceName ?? "Loading...")
-                    Text("Test")
+                    Text(viewModel.deviceName)
                         .font(.largeTitle)
                     Spacer()
                 }
@@ -115,6 +129,6 @@ struct MainView: View {
         ),
     )
     let manager = BLEManager()
-    return MainView(manager: manager)
+    return MainView(modelContext: container.mainContext, manager: manager)
         .modelContainer(container)
 }
