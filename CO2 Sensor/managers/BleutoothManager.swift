@@ -4,6 +4,8 @@ import Foundation
 import SwiftData
 
 class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeripheralDelegate {
+    static let shared = BLEManager()
+
     let newReadingPublisher = PassthroughSubject<BLEReading, Never>()
 
     var centralManager: CBCentralManager!

@@ -8,22 +8,39 @@ import Combine
 import Foundation
 import SwiftData
 
+@MainActor
 class BLEViewModel: ObservableObject {
     let readingType: String
     private var cancellables = Set<AnyCancellable>()
-    private let bleManager: BLEManager
+    private let bleManager = BLEManager.shared
+    private let activityManager: ActivityManager
     private let context: ModelContext
+
+    private var isActivityRunning: Bool = false
 
     @Published var isConnected: Bool = false
 
     @Published var readings: [BLEReading] = []
-    
+
+    var sensorType: String {
+        switch readingType {
+        case "co2":
+            "CO2"
+        case "temperature":
+            "Temperature"
+        case "humidity":
+            "Humidity"
+        default:
+            "Unknown sensor"
+        }
+    }
+
     var deviceName: String {
         guard !readings.isEmpty else {
             return "Loading..."
         }
         let readings = readings.map { reading in
-            return reading.deviceName ?? nil
+            reading.deviceName ?? nil
         }.compactMap(\.self)
         guard let cur = readings.first else {
             return "Loading..."
@@ -167,11 +184,22 @@ class BLEViewModel: ObservableObject {
         }
     }
 
-    init(modelContext: ModelContext, readingType: String, bleManager: BLEManager) {
+    var currentActivityParams: ActivityParams {
+        ActivityParams(
+            value: currentReading,
+            iconName: iconName,
+            safeLevel: safeAmount,
+            avg: avgReading,
+            min: minReading,
+            max: maxReading,
+            sensorType: readingType,
+        )
+    }
+
+    init(modelContext: ModelContext, readingType: String) {
         context = modelContext
         self.readingType = readingType
-        self.bleManager = bleManager
-
+        activityManager = ActivityManager.shared
         subscribeToBLE()
         fetchData()
     }
@@ -193,6 +221,7 @@ class BLEViewModel: ObservableObject {
         }
 
         readings.insert(reading, at: 0)
+        updateActivity()
     }
 
     func fetchData() {
@@ -218,5 +247,21 @@ class BLEViewModel: ObservableObject {
         } catch {
             print("Delete failed: \(error)")
         }
+    }
+
+    func startActivity() {
+        activityManager.startActivity(
+            params: currentActivityParams,
+        )
+        isActivityRunning = true
+    }
+
+    private func updateActivity() {
+        activityManager.updateActivity(params: currentActivityParams)
+    }
+
+    func stopActivity() {
+        activityManager.endActivity(params: currentActivityParams)
+        isActivityRunning = false
     }
 }

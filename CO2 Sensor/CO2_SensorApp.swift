@@ -10,8 +10,6 @@ import SwiftUI
 
 @main
 struct CO2_SensorApp: App {
-    private var bleManager = BLEManager()
-
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             BLEReading.self,
@@ -27,7 +25,7 @@ struct CO2_SensorApp: App {
 
     var body: some Scene {
         WindowGroup {
-            MainView(modelContext: sharedModelContainer.mainContext, manager: bleManager)
+            MainView(modelContext: sharedModelContainer.mainContext)
         }
         .modelContainer(sharedModelContainer)
     }

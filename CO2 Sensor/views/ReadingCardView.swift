@@ -8,22 +8,21 @@ import SwiftData
 import SwiftUI
 
 struct ReadingCardView: View {
+    @Environment(\.modelContext) private var context
     @StateObject var viewModel: BLEViewModel
     let readingType: String
 
     init(
         readingType: String,
-        context: ModelContext,
-        manager: BLEManager,
+        context contextData: ModelContext,
     ) {
+        self.readingType = readingType
         _viewModel = StateObject(
             wrappedValue: BLEViewModel(
-                modelContext: context,
+                modelContext: contextData,
                 readingType: readingType,
-                bleManager: manager,
             ),
         )
-        self.readingType = readingType
     }
 
     var body: some View {
@@ -61,10 +60,24 @@ struct ReadingCardView: View {
                     Text(viewModel.safeAmountLabel)
                     Text("\(viewModel.safeAmount)\(viewModel.units)")
                     Spacer()
-                    Button {
-                        viewModel.deleteAllReadings()
-                    } label: {
-                        Image(systemName: "trash")
+                    HStack {
+                        // stop.circle
+                        Button {
+                            viewModel.startActivity()
+                        } label: {
+                            Image(systemName: "stop.circle")
+                        }
+
+                        Button {
+                            viewModel.startActivity()
+                        } label: {
+                            Image(systemName: "play.circle")
+                        }
+                        Button {
+                            viewModel.deleteAllReadings()
+                        } label: {
+                            Image(systemName: "trash")
+                        }
                     }
                 }
             }
@@ -109,7 +122,6 @@ struct ReadingCardView: View {
     return ReadingCardView(
         readingType: "co2",
         context: container.mainContext,
-        manager: BLEManager(),
     )
     .modelContainer(container)
 }

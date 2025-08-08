@@ -10,19 +10,15 @@ import SwiftUI
 
 struct MainView: View {
     @StateObject var viewModel: BLEViewModel
-    let manager: BLEManager
     @Environment(\.modelContext) private var context
-    
+
     init(
         modelContext: ModelContext,
-        manager: BLEManager,
     ) {
-        self.manager = manager
         _viewModel = StateObject(
             wrappedValue: BLEViewModel(
                 modelContext: modelContext,
                 readingType: "deviceName",
-                bleManager: manager,
             ),
         )
     }
@@ -35,9 +31,18 @@ struct MainView: View {
                         .font(.largeTitle)
                     Spacer()
                 }
-                ReadingCardView(readingType: "co2", context: context, manager: manager)
-                ReadingCardView(readingType: "temperature", context: context, manager: manager)
-                ReadingCardView(readingType: "humidity", context: context, manager: manager)
+                ReadingCardView(
+                    readingType: "co2",
+                    context: context,
+                )
+                ReadingCardView(
+                    readingType: "temperature",
+                    context: context,
+                )
+                ReadingCardView(
+                    readingType: "humidity",
+                    context: context,
+                )
             }
             .padding()
         }
@@ -128,7 +133,8 @@ struct MainView: View {
             type: "humidity",
         ),
     )
-    let manager = BLEManager()
-    return MainView(modelContext: container.mainContext, manager: manager)
-        .modelContainer(container)
+    return MainView(
+        modelContext: container.mainContext,
+    )
+    .modelContainer(container)
 }

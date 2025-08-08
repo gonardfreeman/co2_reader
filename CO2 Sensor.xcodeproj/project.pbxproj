@@ -6,7 +6,22 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		6D3B75422E42E3F500281F11 /* SensorActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D3B75412E42E3CF00281F11 /* SensorActivityAttributes.swift */; };
+		6D3B75492E42E5CE00281F11 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6D2B8C6C2E404CAE0030820E /* WidgetKit.framework */; };
+		6D3B754A2E42E5CE00281F11 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6D2B8C6E2E404CAE0030820E /* SwiftUI.framework */; };
+		6D3B75572E42E5CF00281F11 /* SensorLiveActivitiesExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 6D3B75482E42E5CE00281F11 /* SensorLiveActivitiesExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		6D3B755C2E42E5DE00281F11 /* SensorActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D3B75412E42E3CF00281F11 /* SensorActivityAttributes.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
+		6D3B75552E42E5CF00281F11 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6D9F1DE52E3EDCBF007468A1 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6D3B75472E42E5CE00281F11;
+			remoteInfo = SensorLiveActivitiesExtension;
+		};
 		6D9F1DFD2E3EDCC1007468A1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 6D9F1DE52E3EDCBF007468A1 /* Project object */;
@@ -30,6 +45,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
+				6D3B75572E42E5CF00281F11 /* SensorLiveActivitiesExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -39,12 +55,32 @@
 /* Begin PBXFileReference section */
 		6D2B8C6C2E404CAE0030820E /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		6D2B8C6E2E404CAE0030820E /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		6D3B75412E42E3CF00281F11 /* SensorActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SensorActivityAttributes.swift; sourceTree = "<group>"; };
+		6D3B75482E42E5CE00281F11 /* SensorLiveActivitiesExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SensorLiveActivitiesExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		6D9F1DED2E3EDCBF007468A1 /* CO2 Sensor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "CO2 Sensor.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6D9F1DFC2E3EDCC1007468A1 /* CO2 SensorTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "CO2 SensorTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6D9F1E062E3EDCC1007468A1 /* CO2 SensorUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "CO2 SensorUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		6D3B75582E42E5CF00281F11 /* Exceptions for "SensorLiveActivities" folder in "SensorLiveActivitiesExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 6D3B75472E42E5CE00281F11 /* SensorLiveActivitiesExtension */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		6D3B754B2E42E5CE00281F11 /* SensorLiveActivities */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				6D3B75582E42E5CF00281F11 /* Exceptions for "SensorLiveActivities" folder in "SensorLiveActivitiesExtension" target */,
+			);
+			path = SensorLiveActivities;
+			sourceTree = "<group>";
+		};
 		6D9F1DEF2E3EDCBF007468A1 /* CO2 Sensor */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "CO2 Sensor";
@@ -63,6 +99,15 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		6D3B75452E42E5CE00281F11 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6D3B754A2E42E5CE00281F11 /* SwiftUI.framework in Frameworks */,
+				6D3B75492E42E5CE00281F11 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		6D9F1DEA2E3EDCBF007468A1 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -96,12 +141,22 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		6D3B75402E42E3C400281F11 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				6D3B75412E42E3CF00281F11 /* SensorActivityAttributes.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
 		6D9F1DE42E3EDCBF007468A1 = {
 			isa = PBXGroup;
 			children = (
+				6D3B75402E42E3C400281F11 /* Shared */,
 				6D9F1DEF2E3EDCBF007468A1 /* CO2 Sensor */,
 				6D9F1DFF2E3EDCC1007468A1 /* CO2 SensorTests */,
 				6D9F1E092E3EDCC1007468A1 /* CO2 SensorUITests */,
+				6D3B754B2E42E5CE00281F11 /* SensorLiveActivities */,
 				6D2B8C6B2E404CAE0030820E /* Frameworks */,
 				6D9F1DEE2E3EDCBF007468A1 /* Products */,
 			);
@@ -113,6 +168,7 @@
 				6D9F1DED2E3EDCBF007468A1 /* CO2 Sensor.app */,
 				6D9F1DFC2E3EDCC1007468A1 /* CO2 SensorTests.xctest */,
 				6D9F1E062E3EDCC1007468A1 /* CO2 SensorUITests.xctest */,
+				6D3B75482E42E5CE00281F11 /* SensorLiveActivitiesExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -120,6 +176,28 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		6D3B75472E42E5CE00281F11 /* SensorLiveActivitiesExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6D3B75592E42E5CF00281F11 /* Build configuration list for PBXNativeTarget "SensorLiveActivitiesExtension" */;
+			buildPhases = (
+				6D3B75442E42E5CE00281F11 /* Sources */,
+				6D3B75452E42E5CE00281F11 /* Frameworks */,
+				6D3B75462E42E5CE00281F11 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				6D3B754B2E42E5CE00281F11 /* SensorLiveActivities */,
+			);
+			name = SensorLiveActivitiesExtension;
+			packageProductDependencies = (
+			);
+			productName = SensorLiveActivitiesExtension;
+			productReference = 6D3B75482E42E5CE00281F11 /* SensorLiveActivitiesExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		6D9F1DEC2E3EDCBF007468A1 /* CO2 Sensor */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 6D9F1E102E3EDCC1007468A1 /* Build configuration list for PBXNativeTarget "CO2 Sensor" */;
@@ -132,6 +210,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				6D3B75562E42E5CF00281F11 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				6D9F1DEF2E3EDCBF007468A1 /* CO2 Sensor */,
@@ -199,6 +278,9 @@
 				LastSwiftUpdateCheck = 1640;
 				LastUpgradeCheck = 1640;
 				TargetAttributes = {
+					6D3B75472E42E5CE00281F11 = {
+						CreatedOnToolsVersion = 16.4;
+					};
 					6D9F1DEC2E3EDCBF007468A1 = {
 						CreatedOnToolsVersion = 16.4;
 					};
@@ -229,11 +311,19 @@
 				6D9F1DEC2E3EDCBF007468A1 /* CO2 Sensor */,
 				6D9F1DFB2E3EDCC1007468A1 /* CO2 SensorTests */,
 				6D9F1E052E3EDCC1007468A1 /* CO2 SensorUITests */,
+				6D3B75472E42E5CE00281F11 /* SensorLiveActivitiesExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		6D3B75462E42E5CE00281F11 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		6D9F1DEB2E3EDCBF007468A1 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -258,10 +348,19 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		6D3B75442E42E5CE00281F11 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6D3B755C2E42E5DE00281F11 /* SensorActivityAttributes.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		6D9F1DE92E3EDCBF007468A1 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6D3B75422E42E3F500281F11 /* SensorActivityAttributes.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -282,6 +381,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		6D3B75562E42E5CF00281F11 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6D3B75472E42E5CE00281F11 /* SensorLiveActivitiesExtension */;
+			targetProxy = 6D3B75552E42E5CF00281F11 /* PBXContainerItemProxy */;
+		};
 		6D9F1DFE2E3EDCC1007468A1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 6D9F1DEC2E3EDCBF007468A1 /* CO2 Sensor */;
@@ -295,6 +399,60 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		6D3B755A2E42E5CF00281F11 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = S7H39LL58W;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SensorLiveActivities/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = SensorLiveActivities;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.007arenko.co2sensor.SensorLiveActivities;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		6D3B755B2E42E5CF00281F11 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = S7H39LL58W;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SensorLiveActivities/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = SensorLiveActivities;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.007arenko.co2sensor.SensorLiveActivities;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		6D9F1E0E2E3EDCC1007468A1 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -429,6 +587,7 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "To connect with CO2 sensore device";
 				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "To connect with CO2 sensore device";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -439,7 +598,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.007arenko.CO2-Sensor";
+				PRODUCT_BUNDLE_IDENTIFIER = com.007arenko.co2sensor;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -460,6 +619,7 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "To connect with CO2 sensore device";
 				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "To connect with CO2 sensore device";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -470,7 +630,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.007arenko.CO2-Sensor";
+				PRODUCT_BUNDLE_IDENTIFIER = com.007arenko.co2sensor;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -553,6 +713,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		6D3B75592E42E5CF00281F11 /* Build configuration list for PBXNativeTarget "SensorLiveActivitiesExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6D3B755A2E42E5CF00281F11 /* Debug */,
+				6D3B755B2E42E5CF00281F11 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		6D9F1DE82E3EDCBF007468A1 /* Build configuration list for PBXProject "CO2 Sensor" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
