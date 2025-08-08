@@ -11,6 +11,7 @@ struct ReadingCardView: View {
     @Environment(\.modelContext) private var context
     @StateObject var viewModel: BLEViewModel
     let readingType: String
+    let impactMedium = UIImpactFeedbackGenerator(style: .medium)
 
     init(
         readingType: String,
@@ -63,18 +64,22 @@ struct ReadingCardView: View {
                     HStack {
                         // stop.circle
                         Button {
-                            viewModel.startActivity()
+                            impactMedium.impactOccurred()
+                            viewModel.stopActivity()
                         } label: {
                             Image(systemName: "stop.circle")
                         }
 
                         Button {
+                            impactMedium.impactOccurred()
                             viewModel.startActivity()
                         } label: {
                             Image(systemName: "play.circle")
                         }
                         Button {
+                            impactMedium.impactOccurred()
                             viewModel.deleteAllReadings()
+                            
                         } label: {
                             Image(systemName: "trash")
                         }

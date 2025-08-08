@@ -184,18 +184,6 @@ class BLEViewModel: ObservableObject {
         }
     }
 
-    var currentActivityParams: ActivityParams {
-        ActivityParams(
-            value: currentReading,
-            iconName: iconName,
-            safeLevel: safeAmount,
-            avg: avgReading,
-            min: minReading,
-            max: maxReading,
-            sensorType: readingType,
-        )
-    }
-
     init(modelContext: ModelContext, readingType: String) {
         context = modelContext
         self.readingType = readingType
@@ -251,17 +239,44 @@ class BLEViewModel: ObservableObject {
 
     func startActivity() {
         activityManager.startActivity(
-            params: currentActivityParams,
+            params: ActivityParams(
+                value: currentReading,
+                iconName: iconName,
+                safeLevel: safeAmount,
+                avg: avgReading,
+                min: minReading,
+                max: maxReading,
+                sensorType: readingType,
+            ),
         )
         isActivityRunning = true
     }
 
     private func updateActivity() {
-        activityManager.updateActivity(params: currentActivityParams)
+        if isActivityRunning == false {
+            return
+        }
+        activityManager.updateActivity(params: ActivityParams(
+            value: currentReading,
+            iconName: iconName,
+            safeLevel: safeAmount,
+            avg: avgReading,
+            min: minReading,
+            max: maxReading,
+            sensorType: readingType,
+        ))
     }
 
     func stopActivity() {
-        activityManager.endActivity(params: currentActivityParams)
+        activityManager.endActivity(params: ActivityParams(
+            value: currentReading,
+            iconName: iconName,
+            safeLevel: safeAmount,
+            avg: avgReading,
+            min: minReading,
+            max: maxReading,
+            sensorType: readingType,
+        ))
         isActivityRunning = false
     }
 }
