@@ -65,7 +65,7 @@ final class ActivityManager {
             await activity?.end(content, dismissalPolicy: .immediate)
         }
     }
-    
+
     func endAllActivities() async {
         for activity in Activity<SensorLiveActivitiesAttributes>.activities {
             await activity.end(nil, dismissalPolicy: .immediate)

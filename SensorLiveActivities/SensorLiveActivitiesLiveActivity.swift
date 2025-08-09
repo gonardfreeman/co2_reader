@@ -13,11 +13,27 @@ struct SensorLiveActivitiesLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: SensorLiveActivitiesAttributes.self) { context in
             // Lock screen/banner UI goes here
-            VStack {
-                Text(context.state.value)
+            VStack(alignment: .leading) {
+                HStack {
+                    Image(systemName: context.attributes.iconName)
+                        .font(.system(size: 28))
+                    Text(context.attributes.sensorType)
+                        .font(.system(size: 28))
+                }
+                HStack {
+                    Text("Cur: \(context.state.value)")
+                }
+                HStack {
+                    Text("Avg: \(context.state.min)")
+                    Text("Safe: \(context.attributes.safeLevel)")
+                }
+                HStack {
+                    Text("Min: \(context.state.min)")
+                    Text("Max: \(context.state.max)")
+                    Spacer()
+                }
             }
-            .activityBackgroundTint(Color.cyan)
-            .activitySystemActionForegroundColor(Color.black)
+            .padding()
 
         } dynamicIsland: { context in
             DynamicIsland {
@@ -45,7 +61,9 @@ struct SensorLiveActivitiesLiveActivity: Widget {
                             Text("Max: \(context.state.max)")
                         }
                     }
-                    .padding(EdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10))
+                    .padding(
+                        EdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10)
+                    )
                 }
             } compactLeading: {
                 Image(systemName: context.attributes.iconName)
