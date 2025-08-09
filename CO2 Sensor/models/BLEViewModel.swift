@@ -8,20 +8,19 @@ import Combine
 import Foundation
 import SwiftData
 
-@MainActor
 class BLEViewModel: ObservableObject {
     let readingType: String
     private var cancellables = Set<AnyCancellable>()
-    private let bleManager = BLEManager.shared
+    private let bleManager: BLEManager
     private let activityManager: ActivityManager
     private let context: ModelContext
-
+    
     private var isActivityRunning: Bool = false
-
+    
+    
     @Published var isConnected: Bool = false
-
     @Published var readings: [BLEReading] = []
-
+    
     var sensorType: String {
         switch readingType {
         case "co2":
@@ -34,7 +33,7 @@ class BLEViewModel: ObservableObject {
             "Unknown sensor"
         }
     }
-
+    
     var deviceName: String {
         guard !readings.isEmpty else {
             return "Loading..."
@@ -47,7 +46,7 @@ class BLEViewModel: ObservableObject {
         }
         return cur
     }
-
+    
     var currentReading: String {
         if allReadings.isEmpty {
             return "N/A"
@@ -57,7 +56,7 @@ class BLEViewModel: ObservableObject {
         }
         return String(cur)
     }
-
+    
     var allReadings: [Int32] {
         guard !readings.isEmpty else {
             return []
@@ -86,7 +85,7 @@ class BLEViewModel: ObservableObject {
             }
         return currentReadings.compactMap(\.self)
     }
-
+    
     var maxReading: String {
         guard !allReadings.isEmpty else {
             return "N/A"
@@ -96,7 +95,7 @@ class BLEViewModel: ObservableObject {
         }
         return String(maxValue)
     }
-
+    
     var minReading: String {
         guard !allReadings.isEmpty else {
             return "N/A"
@@ -106,7 +105,7 @@ class BLEViewModel: ObservableObject {
         }
         return String(maxValue)
     }
-
+    
     var avgReading: String {
         guard !allReadings.isEmpty else {
             return "N/A"
@@ -118,7 +117,7 @@ class BLEViewModel: ObservableObject {
         let avg = sum / Int32(allReadings.count)
         return String(avg)
     }
-
+    
     var safeAmount: String {
         switch readingType {
         case "co2":
@@ -131,7 +130,7 @@ class BLEViewModel: ObservableObject {
             "N/A"
         }
     }
-
+    
     var safeAmountLabel: String {
         switch readingType {
         case "co2":
@@ -144,7 +143,7 @@ class BLEViewModel: ObservableObject {
             "Recommended:"
         }
     }
-
+    
     var units: String {
         switch readingType {
         case "co2":
@@ -157,7 +156,7 @@ class BLEViewModel: ObservableObject {
             " Unknown unit"
         }
     }
-
+    
     var mainLabel: String {
         switch readingType {
         case "co2":
@@ -170,7 +169,7 @@ class BLEViewModel: ObservableObject {
             "Reading"
         }
     }
-
+    
     var iconName: String {
         switch readingType {
         case "co2":
@@ -183,15 +182,22 @@ class BLEViewModel: ObservableObject {
             "sensor"
         }
     }
-
-    init(modelContext: ModelContext, readingType: String) {
+    
+    init(
+        modelContext: ModelContext,
+        readingType: String,
+        bleManager: BLEManager = .shared,
+        activityManager: ActivityManager = .shared
+    ) {
         context = modelContext
         self.readingType = readingType
-        activityManager = ActivityManager.shared
+        self.bleManager = bleManager
+        self.activityManager = activityManager
         subscribeToBLE()
+        subscribeToConnectivity()
         fetchData()
     }
-
+    
     private func subscribeToBLE() {
         bleManager.newReadingPublisher
             .sink { [weak self] reading in
@@ -199,7 +205,15 @@ class BLEViewModel: ObservableObject {
             }
             .store(in: &cancellables)
     }
-
+    
+    private func subscribeToConnectivity() {
+        bleManager.connectivityPublisher
+            .sink { [weak self] isActive in
+                self?.isConnected = isActive
+            }
+            .store(in: &cancellables)
+    }
+    
     private func save(reading: BLEReading) {
         context.insert(reading)
         do {
@@ -207,25 +221,25 @@ class BLEViewModel: ObservableObject {
         } catch {
             print("Failed to save reading: \(error)")
         }
-
+        
         readings.insert(reading, at: 0)
         updateActivity()
     }
-
+    
     func fetchData() {
         let type = readingType
         let descriptor = FetchDescriptor<BLEReading>(
             predicate: #Predicate { $0.type == type },
             sortBy: [.init(\.timestamp, order: .reverse)],
         )
-
+        
         do {
             readings = try context.fetch(descriptor)
         } catch {
             print("Fetch failed: \(error)")
         }
     }
-
+    
     func deleteAllReadings() {
         do {
             let all = try context.fetch(FetchDescriptor<BLEReading>())
@@ -236,8 +250,9 @@ class BLEViewModel: ObservableObject {
             print("Delete failed: \(error)")
         }
     }
-
-    func startActivity() {
+    
+    @MainActor
+    func startActivity(readingType innerReadingType: String) {
         activityManager.startActivity(
             params: ActivityParams(
                 value: currentReading,
@@ -246,12 +261,12 @@ class BLEViewModel: ObservableObject {
                 avg: avgReading,
                 min: minReading,
                 max: maxReading,
-                sensorType: readingType,
+                sensorType: innerReadingType,
             ),
         )
         isActivityRunning = true
     }
-
+    
     private func updateActivity() {
         if isActivityRunning == false {
             return
@@ -266,17 +281,23 @@ class BLEViewModel: ObservableObject {
             sensorType: readingType,
         ))
     }
-
+    
     func stopActivity() {
-        activityManager.endActivity(params: ActivityParams(
-            value: currentReading,
-            iconName: iconName,
-            safeLevel: safeAmount,
-            avg: avgReading,
-            min: minReading,
-            max: maxReading,
-            sensorType: readingType,
-        ))
+        activityManager.endActivity(
+            params: ActivityParams(
+                value: currentReading,
+                iconName: iconName,
+                safeLevel: safeAmount,
+                avg: avgReading,
+                min: minReading,
+                max: maxReading,
+                sensorType: readingType,
+            )
+        )
         isActivityRunning = false
+    }
+    
+    func endAllActivities() async {
+        await activityManager.endAllActivities()
     }
 }

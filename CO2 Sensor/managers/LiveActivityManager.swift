@@ -7,17 +7,16 @@
 import ActivityKit
 import Foundation
 
-@MainActor
 final class ActivityManager {
     static let shared = ActivityManager()
     private var activity: Activity<SensorLiveActivitiesAttributes>?
+    private var isActivityRunning: Bool = false
 
     func startActivity(params: ActivityParams) {
         guard ActivityAuthorizationInfo().areActivitiesEnabled else {
             print("Live Activities are not enabled.")
             return
         }
-
         let attributes = SensorLiveActivitiesAttributes(
             sensorType: params.sensorType,
             safeLevel: params.safeLevel,
@@ -64,6 +63,12 @@ final class ActivityManager {
         let content = ActivityContent<SensorLiveActivitiesAttributes.ContentState>(state: contentState, staleDate: nil, relevanceScore: 100)
         Task {
             await activity?.end(content, dismissalPolicy: .immediate)
+        }
+    }
+    
+    func endAllActivities() async {
+        for activity in Activity<SensorLiveActivitiesAttributes>.activities {
+            await activity.end(nil, dismissalPolicy: .immediate)
         }
     }
 }

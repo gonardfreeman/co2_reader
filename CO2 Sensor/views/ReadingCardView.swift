@@ -35,6 +35,10 @@ struct ReadingCardView: View {
                         .foregroundColor(Color(hex: "#6e757b"))
                     Text(viewModel.mainLabel)
                         .font(.largeTitle)
+                    if !viewModel.isConnected {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle())
+                    }
                 }
                 Spacer()
                 VStack {
@@ -62,24 +66,25 @@ struct ReadingCardView: View {
                     Text("\(viewModel.safeAmount)\(viewModel.units)")
                     Spacer()
                     HStack {
-                        // stop.circle
                         Button {
                             impactMedium.impactOccurred()
                             viewModel.stopActivity()
                         } label: {
                             Image(systemName: "stop.circle")
                         }
-
                         Button {
-                            impactMedium.impactOccurred()
-                            viewModel.startActivity()
+                            Task {
+                                impactMedium.impactOccurred()
+                                await viewModel.endAllActivities()
+                                viewModel.startActivity(readingType: readingType)
+                            }
                         } label: {
                             Image(systemName: "play.circle")
                         }
                         Button {
                             impactMedium.impactOccurred()
                             viewModel.deleteAllReadings()
-                            
+
                         } label: {
                             Image(systemName: "trash")
                         }

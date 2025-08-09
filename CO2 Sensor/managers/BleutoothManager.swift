@@ -5,24 +5,19 @@ import SwiftData
 
 class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeripheralDelegate {
     static let shared = BLEManager()
-
+    
     let newReadingPublisher = PassthroughSubject<BLEReading, Never>()
-
+    let connectivityPublisher = PassthroughSubject<Bool, Never>()
+    
     var centralManager: CBCentralManager!
     var connectedPeripheral: CBPeripheral?
-    var timer: Timer?
-
-    @Published var isConnected = false
-    @Published var deviceName: String = "No data yet"
-    @Published var gas: Gas = .init()
-    @Published var temperature: Temperature = .init()
-    @Published var humidity: UInt8 = 0
-
+    
+    
     override init() {
         super.init()
         centralManager = CBCentralManager(delegate: self, queue: nil)
     }
-
+    
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         if central.state == .poweredOn {
             centralManager.scanForPeripherals(
@@ -34,9 +29,10 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
             )
         } else {
             print("Bluetooth not available")
+            connectivityPublisher.send(false)
         }
     }
-
+    
     func centralManager(_: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData _: [String: Any], rssi _: NSNumber) {
         print("Discovered: \(peripheral.name ?? "Unknown")")
         connectedPeripheral = peripheral
@@ -44,18 +40,24 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         centralManager.connect(peripheral, options: nil)
         peripheral.delegate = self
     }
-
+    
+    
     func centralManager(_: CBCentralManager, didConnect peripheral: CBPeripheral) {
         print("Connected to: \(peripheral.name ?? "Unknown")")
-        isConnected = true
         peripheral.discoverServices(
             [
                 ConfigurationServiceUUIDDefinitions.service.uuid,
                 EnvironmentServiceUUIDDefinitions.service.uuid,
             ],
         )
+        connectivityPublisher.send(true)
     }
-
+    
+    func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
+        print("Disconnected from: \(peripheral.name ?? "Unknown")")
+        connectivityPublisher.send(false)
+    }
+    
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices _: Error?) {
         guard let services = peripheral.services else { return }
         for service in services {
@@ -66,7 +68,7 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
             )
         }
     }
-
+    
     func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error _: Error?) {
         guard let characteristics = service.characteristics else {
             return
@@ -93,7 +95,7 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
             }
         }
     }
-
+    
     func peripheral(_: CBPeripheral, didUpdateNotificationStateFor characteristic: CBCharacteristic, error: Error?) {
         if let error {
             print("⚠️ Failed to enable notifications: \(error.localizedDescription)")
@@ -101,11 +103,11 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         }
         updateValue(characteristic: characteristic)
     }
-
+    
     func peripheral(_: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error _: Error?) {
         updateValue(characteristic: characteristic)
     }
-
+    
     private func updateValue(characteristic: CBCharacteristic) {
         switch characteristic.uuid {
         case ConfigurationServiceUUIDDefinitions.name.uuid:
@@ -120,14 +122,13 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
             print("unknown char: \(characteristic.uuid)")
         }
     }
-
+    
     private func updateHumidity(characteristic: CBCharacteristic) {
         guard let value = characteristic.value else {
             print("no value for: \(characteristic.uuid)")
             return
         }
         DispatchQueue.main.async {
-            self.humidity = UInt8(value[0])
             self.newReadingPublisher.send(
                 BLEReading(
                     humidity: UInt8(value[0]),
@@ -136,7 +137,7 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
             )
         }
     }
-
+    
     private func updateTemperature(characteristic: CBCharacteristic) {
         guard let value = characteristic.value else {
             print("no value for: \(characteristic.uuid)")
@@ -144,7 +145,6 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         }
         guard let temperature = Temperature(data: value) else { return }
         DispatchQueue.main.async {
-            self.temperature = temperature
             self.newReadingPublisher.send(
                 BLEReading(
                     temperature: temperature.decimal,
@@ -153,7 +153,7 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
             )
         }
     }
-
+    
     private func updateCo2(characteristic: CBCharacteristic) {
         guard let value = characteristic.value else {
             print("no value for: \(characteristic.uuid)")
@@ -161,7 +161,6 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         }
         guard let gas = Gas(data: value) else { return }
         DispatchQueue.main.async {
-            self.gas = gas
             self.newReadingPublisher.send(
                 BLEReading(
                     gas: gas.co2_ppm,
@@ -170,7 +169,7 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
             )
         }
     }
-
+    
     private func updateName(characteristic: CBCharacteristic) {
         guard let value = characteristic.value else {
             print("no value for: \(characteristic.uuid)")
@@ -178,7 +177,6 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         }
         let stringData = String(decoding: value, as: UTF8.self)
         DispatchQueue.main.async {
-            self.deviceName = stringData
             self.newReadingPublisher.send(
                 BLEReading(
                     deviceName: stringData,
@@ -187,4 +185,19 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
             )
         }
     }
+    
+//    func activateBLE() {
+//        centralManager.scanForPeripherals(
+//            withServices: [
+//                ConfigurationServiceUUIDDefinitions.service.uuid,
+//                EnvironmentServiceUUIDDefinitions.service.uuid,
+//            ],
+//            options: nil,
+//        )
+//    }
+//    
+//    func deactivateBLE() {
+//        centralManager?.stopScan()
+//        connectivityPublisher.send(false)
+//    }
 }
